@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@PathVariable("id") @Positive Long userId, @RequestBody UserDto userDto) {
+    public UserDto update(@PathVariable("id") @Positive Long userId, @Valid @RequestBody UserDto userDto) {
         if (Objects.isNull(userDto.getEmail()) && Objects.isNull(userDto.getName())) {
             throw new ConditionsNotMetException("Должно быть заполнено поле email либо name!");
         }
