@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@PathVariable("id") @Positive Long userId, @Valid @RequestBody UserDto userDto) {
+    public UserDto update(@PathVariable("id") @Positive Long userId, @Valid @RequestBody UserUpdateDto userDto) {
         if (Objects.isNull(userDto.getEmail()) && Objects.isNull(userDto.getName())) {
             throw new ConditionsNotMetException("Должно быть заполнено поле email либо name!");
         }

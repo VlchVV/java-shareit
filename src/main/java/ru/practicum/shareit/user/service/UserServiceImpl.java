@@ -8,6 +8,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -46,7 +47,7 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) {
+    public UserDto updateUser(UserUpdateDto userDto) {
         log.debug("Начато обновление пользователя", userDto);
         validateBeforeUpdate(userDto);
         final Long userId = userDto.getId();
@@ -85,7 +86,7 @@ class UserServiceImpl implements UserService {
         log.debug("Проверка перед созданием пользователя завершена", userDto);
     }
 
-    private void validateBeforeUpdate(UserDto userDto) {
+    private void validateBeforeUpdate(UserUpdateDto userDto) {
         log.debug("Начата проверка перед обновлением пользователя", userDto);
         final Long userId = userDto.getId();
         getUser(userId);
