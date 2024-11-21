@@ -61,16 +61,17 @@ class UserServiceImpl implements UserService {
             currentUser.setName(name);
         }
         log.debug("Пользователь обновлен", currentUser);
-        return UserMapper.userToDto(userRepository.update(UserMapper.dtoToUser(currentUser)));
+        return UserMapper.userToDto(userRepository.save(UserMapper.dtoToUser(currentUser)));
     }
 
     @Override
     public void deleteUser(Long id) {
         log.debug(String.format("Начато удаление пользователя с id = %d", id));
-        if (userRepository.delete(id).isEmpty()) {
+        if (userRepository.findById(id).isEmpty()) {
             log.error(String.format("Пользователь с id = %d не найден!", id));
             throw new NotFoundException(String.format("Пользователь с id = %d не найден!", id));
         }
+        userRepository.deleteById(id);
         log.debug(String.format("Пользователь с id = %d удален", id));
     }
 
