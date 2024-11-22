@@ -3,12 +3,14 @@ package ru.practicum.shareit.user.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
-@Data
 @EqualsAndHashCode(of = { "id" })
 public class User {
     @Id

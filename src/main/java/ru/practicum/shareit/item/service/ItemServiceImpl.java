@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -31,6 +32,7 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Slf4j
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -41,12 +43,14 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public ItemDto getItem(Long id, Long userId) {
         log.debug(String.format("Поиск вещи по id = %d.", id));
         return addBookingsAndComments(getItemById(id), userId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getUsersItems(Long userId) {
         log.debug(String.format("Поиск вещей по id пользователя = %d.", userId));
@@ -56,6 +60,7 @@ public class ItemServiceImpl implements ItemService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> searchItems(String text) {
         log.debug(String.format("Поиск вещей по тексту = %s.", text));

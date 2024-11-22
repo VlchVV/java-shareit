@@ -2,16 +2,18 @@ package ru.practicum.shareit.item.comment.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "comments")
-@Data
 @EqualsAndHashCode(of = {"id"})
 public class Comment {
     @Id

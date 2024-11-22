@@ -2,13 +2,15 @@ package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "items")
-@Data
 @EqualsAndHashCode(of = { "id" })
 public class Item {
     @Id
