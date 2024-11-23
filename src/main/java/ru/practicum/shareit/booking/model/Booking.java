@@ -1,24 +1,39 @@
 package ru.practicum.shareit.booking.model;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-@Data
+@Entity
+@Getter
+@Setter
+@Table(name = "bookings")
 @EqualsAndHashCode(of = { "id" })
 public class Booking {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
+
+    @Column(name = "start_dt", nullable = false)
     private LocalDateTime start;
-    @NonNull
+
+    @Column(name = "end_dt", nullable = false)
     private LocalDateTime end;
-    @NotNull
-    private Long item;
-    @NonNull
-    private Long booker;
+
+    @ManyToOne
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
+
+    @ManyToOne
+    @JoinColumn(name = "booker_id", nullable = false)
+    private User booker;
+
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
 }
