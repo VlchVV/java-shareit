@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.item.comment.dto.CommentDto;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -22,7 +19,5 @@ public class ItemDto {
     Long owner;
     @NotNull
     private Boolean available;
-    private BookingOutputDto lastBooking;
-    private BookingOutputDto nextBooking;
-    private List<CommentDto> comments;
+    private Long requestId;
 }

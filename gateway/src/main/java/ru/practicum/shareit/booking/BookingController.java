@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +20,20 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> saveNewBooking(@Valid @RequestBody BookingDto bookingDto,
-                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
+                                                 @RequestHeader("X-Sharer-User-Id") @Positive long userId) {
         return bookingClient.saveNewBooking(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> approve(@PathVariable long bookingId,
-                                          @RequestParam(name = "approved") Boolean isApproved,
-                                          @RequestHeader("X-Sharer-User-Id") long userId) {
+                                          @RequestParam(name = "approved") @NotNull Boolean isApproved,
+                                          @RequestHeader("X-Sharer-User-Id") @Positive long userId) {
         return bookingClient.approve(bookingId, isApproved, userId);
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBookingById(@PathVariable long bookingId,
-                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
+                                                 @RequestHeader("X-Sharer-User-Id") @Positive long userId) {
         return bookingClient.getBookingById(bookingId, userId);
     }
 
@@ -40,7 +41,7 @@ public class BookingController {
     public ResponseEntity<Object> getAllByBooker(@RequestParam(defaultValue = "1") @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = "10") @Positive Integer size,
                                                  @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
-                                                 @RequestHeader("X-Sharer-User-Id") long bookerId) {
+                                                 @RequestHeader("X-Sharer-User-Id") @Positive long bookerId) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         return bookingClient.getAllByBooker(from, size, state, bookerId);
@@ -50,7 +51,7 @@ public class BookingController {
     public ResponseEntity<Object> getAllByOwner(@RequestParam(defaultValue = "1") @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = "10") @Positive Integer size,
                                                 @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
-                                                @RequestHeader("X-Sharer-User-Id") long ownerId) {
+                                                @RequestHeader("X-Sharer-User-Id") @Positive long ownerId) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         return bookingClient.getAllByOwner(from, size, state, ownerId);

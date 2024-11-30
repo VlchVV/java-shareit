@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +24,6 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Slf4j
 @Transactional
@@ -83,9 +83,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingOutputDto> getAllByBooker(String state, long bookerId) {
+    public List<BookingOutputDto> getAllByBooker(Integer from, Integer size, String state, long bookerId) {
         User booker = getUser(bookerId);
         List<Booking> bookings;
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -93,26 +94,24 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException(String.format("Неизвестный тип состояния бронирования: %s", state));
         }
         bookings = switch (bookingState) {
-            case ALL -> bookingRepository.findAllByBookerId(booker.getId(), Sort.by(DESC, "start"));
-            case CURRENT -> bookingRepository.findAllByBookerIdAndStateCurrent(booker.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
-            case PAST -> bookingRepository.findAllByBookerIdAndStatePast(booker.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
-            case FUTURE -> bookingRepository.findAllByBookerIdAndStateFuture(booker.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
+            case ALL -> bookingRepository.findAllByBookerId(booker.getId(), pageable);
+            case CURRENT -> bookingRepository.findAllByBookerIdAndStateCurrent(booker.getId(), pageable);
+            case PAST -> bookingRepository.findAllByBookerIdAndStatePast(booker.getId(), pageable);
+            case FUTURE -> bookingRepository.findAllByBookerIdAndStateFuture(booker.getId(), pageable);
             case WAITING -> bookingRepository.findAllByBookerIdAndStatus(booker.getId(),
-                    BookingStatus.WAITING, Sort.by(Sort.Direction.DESC, "start"));
+                    BookingStatus.WAITING, pageable);
             case REJECTED -> bookingRepository.findAllByBookerIdAndStatus(booker.getId(),
-                    BookingStatus.REJECTED, Sort.by(DESC, "end"));
+                    BookingStatus.REJECTED, pageable);
         };
         return bookings.stream().map(BookingMapper::bookingToOutputDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingOutputDto> getAllByOwner(long ownerId, String state) {
+    public List<BookingOutputDto> getAllByOwner(Integer from, Integer size, String state, long ownerId) {
         User owner = getUser(ownerId);
         List<Booking> bookings;
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
         BookingState bookingState;
         try {
             bookingState = BookingState.valueOf(state);
@@ -120,18 +119,14 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException(String.format("Неизвестный тип состояния бронирования: %s", state));
         }
         bookings = switch (bookingState) {
-            case ALL -> bookingRepository.findAllByOwnerId(owner.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
-            case CURRENT -> bookingRepository.findAllByOwnerIdAndStateCurrent(owner.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
-            case PAST -> bookingRepository.findAllByOwnerIdAndStatePast(owner.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
-            case FUTURE -> bookingRepository.findAllByOwnerIdAndStateFuture(owner.getId(),
-                    Sort.by(Sort.Direction.DESC, "start"));
+            case ALL -> bookingRepository.findAllByOwnerId(owner.getId(), pageable);
+            case CURRENT -> bookingRepository.findAllByOwnerIdAndStateCurrent(owner.getId(), pageable);
+            case PAST -> bookingRepository.findAllByOwnerIdAndStatePast(owner.getId(), pageable);
+            case FUTURE -> bookingRepository.findAllByOwnerIdAndStateFuture(owner.getId(), pageable);
             case WAITING -> bookingRepository.findAllByOwnerIdAndStatus(owner.getId(),
-                    BookingStatus.WAITING, Sort.by(Sort.Direction.DESC, "start"));
+                    BookingStatus.WAITING, pageable);
             case REJECTED -> bookingRepository.findAllByOwnerIdAndStatus(owner.getId(),
-                    BookingStatus.REJECTED, Sort.by(Sort.Direction.DESC, "start"));
+                    BookingStatus.REJECTED, pageable);
         };
         return bookings.stream().map(BookingMapper::bookingToOutputDto).collect(Collectors.toList());
     }

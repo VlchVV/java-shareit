@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -42,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository requestRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -52,23 +56,25 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getUsersItems(Long userId) {
+    public List<ItemDto> getUsersItems(Integer from, Integer size, Long userId) {
         log.debug(String.format("Поиск вещей по id пользователя = %d.", userId));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
         userService.getUser(userId);
-        return itemRepository.findByOwnerId(userId).stream()
+        return itemRepository.findByOwnerId(userId, pageable).stream()
                 .map(ItemMapper::itemToDto)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchItems(String text) {
+    public List<ItemDto> searchItems(Integer from, Integer size, String text) {
         log.debug(String.format("Поиск вещей по тексту = %s.", text));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").descending());
         if (text.isBlank()) {
             log.debug("Тестовая строка поиска пустая");
             return Collections.emptyList();
         }
-        return itemRepository.findByText(text).stream()
+        return itemRepository.findByText(text, pageable).stream()
                 .map(ItemMapper::itemToDto)
                 .toList();
     }
@@ -78,6 +84,11 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Начато создание вещи", itemDto);
         validateBeforeSave(itemDto);
         final Item item = ItemMapper.dtoToItem(itemDto, getUserById(itemDto.getOwner()));
+        Long requestId = itemDto.getRequestId();
+        if (requestId != null) {
+            item.setItemRequest(requestRepository.findById(requestId).orElseThrow(() ->
+                    new NotFoundException(String.format("Запрос %d не найден", requestId))));
+        }
         log.debug("Вещь создана", item);
         return ItemMapper.itemToDto(itemRepository.save(item));
     }

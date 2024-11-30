@@ -9,9 +9,9 @@ public interface ItemService {
 
     ItemDto getItem(Long id, Long userId);
 
-    List<ItemDto> getUsersItems(Long userId);
+    List<ItemDto> getUsersItems(Integer from, Integer size, Long userId);
 
-    List<ItemDto> searchItems(String text);
+    List<ItemDto> searchItems(Integer from, Integer size, String text);
 
     ItemDto saveItem(ItemDto itemDto);
 

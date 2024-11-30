@@ -1,10 +1,6 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -14,37 +10,41 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping("/items")
 public class ItemController {
 
     private final ItemService itemService;
 
     @GetMapping("/{id}")
-    public ItemDto getItem(@PathVariable("id") @Positive Long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemDto getItem(@PathVariable("id") Long itemId,
+                           @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.getItem(itemId, userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam @NotNull String text) {
-        return itemService.searchItems(text);
+    public List<ItemDto> searchItems(@RequestParam(defaultValue = "1") Integer from,
+                                     @RequestParam(defaultValue = "10") Integer size,
+                                     @RequestParam String text) {
+        return itemService.searchItems(from, size, text);
     }
 
     @GetMapping
-    public List<ItemDto> getUsersItems(@Valid @RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
-        return itemService.getUsersItems(userId);
+    public List<ItemDto> getUsersItems(@RequestParam(defaultValue = "1") Integer from,
+                                       @RequestParam(defaultValue = "10") Integer size,
+                                       @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getUsersItems(from, size, userId);
     }
 
     @PostMapping
-    public ItemDto saveNewItem(@RequestHeader("X-Sharer-User-Id") @Positive Long userId,
-                               @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto saveNewItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+                               @RequestBody ItemDto itemDto) {
         itemDto.setOwner(userId);
         return itemService.saveItem(itemDto);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto updateItem(@PathVariable("id") @Positive Long itemId,
-                              @Valid @RequestHeader("X-Sharer-User-Id") @Positive Long userId,
+    public ItemDto updateItem(@PathVariable("id") Long itemId,
+                              @RequestHeader("X-Sharer-User-Id") Long userId,
                               @RequestBody ItemDto itemDto) {
         itemDto.setId(itemId);
         itemDto.setOwner(userId);
@@ -53,7 +53,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@PathVariable long itemId,
-                                 @Valid @RequestBody CommentDto commentDto,
+                                 @RequestBody CommentDto commentDto,
                                  @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.saveNewComment(commentDto, itemId, userId);
     }

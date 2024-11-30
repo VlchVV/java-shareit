@@ -18,11 +18,4 @@ public class ErrorHandler {
         log.error("Ошибка валидации", e.getMessage());
         return new ErrorResponse("Ошибка валидации", e.getMessage());
     }
-
-    @ExceptionHandler({NotFoundException.class, ValidationException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final NotFoundException e) {
-        log.error("Не найдено", e.getMessage());
-        return new ErrorResponse("Не найдено", e.getMessage());
-    }
 }
