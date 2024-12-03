@@ -20,7 +20,6 @@ import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -40,7 +39,7 @@ class BookingServiceTest {
     private final User booker = new User(2L, "user2", "user2@mail.ru");
     private final Item item = new Item(1L, "item", "cool", true, user, null);
     private final Booking booking = new Booking(1L, LocalDateTime.now().minusYears(2), LocalDateTime.now().minusYears(1), item, booker, BookingStatus.WAITING);
-    private final BookingDto BookingDto = new BookingDto(LocalDateTime.now().minusYears(2), LocalDateTime.now().minusYears(1), 1L);
+    private final BookingDto bookingDto = new BookingDto(LocalDateTime.now().minusYears(2), LocalDateTime.now().minusYears(1), 1L);
     private final BookingDto bookingDtoWrongItem = new BookingDto(LocalDateTime.now().minusYears(2), LocalDateTime.now().minusYears(1), 2L);
     @Mock
     private BookingRepository bookingRepository;
@@ -50,14 +49,12 @@ class BookingServiceTest {
     private UserRepository userRepository;
     @InjectMocks
     private BookingServiceImpl bookingService;
-    @InjectMocks
-    private UserServiceImpl userService;
 
     @Test
     void shouldThrowException_whenUser_DoesNotExist() {
         when((userRepository).findById(3L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(NotFoundException.class, () -> bookingService.save(BookingDto, 3L));
+        Assertions.assertThrows(NotFoundException.class, () -> bookingService.save(bookingDto, 3L));
     }
 
     @Test
@@ -74,7 +71,7 @@ class BookingServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         item.setAvailable(false);
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(BookingDto, 2L));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(bookingDto, 2L));
     }
 
     @Test
@@ -82,7 +79,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(BookingDto, 1L));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(bookingDto, 1L));
     }
 
     @Test
@@ -90,7 +87,7 @@ class BookingServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(BookingDto, 1L));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(bookingDto, 1L));
     }
 
     @Test
@@ -354,7 +351,7 @@ class BookingServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         item.setAvailable(false);
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(BookingDto, 2L));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(bookingDto, 2L));
     }
 
     @Test
@@ -425,7 +422,7 @@ class BookingServiceTest {
     void shouldThrowException_whenUserIsNotAvailable() {
         when(userRepository.findById(2L)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(NotFoundException.class, () -> bookingService.save(BookingDto, 2L));
+        Assertions.assertThrows(NotFoundException.class, () -> bookingService.save(bookingDto, 2L));
     }
 
     @Test
@@ -466,7 +463,7 @@ class BookingServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         item.setAvailable(false);
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(BookingDto, 2L));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(bookingDto, 2L));
     }
 
     @Test
@@ -528,7 +525,7 @@ class BookingServiceTest {
         booking.setEnd(now.plusDays(3));
         item.setAvailable(false);
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(BookingDto, 2L));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.save(bookingDto, 2L));
     }
 
     @Test

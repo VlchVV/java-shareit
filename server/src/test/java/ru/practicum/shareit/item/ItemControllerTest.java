@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
 
-    private final ItemDto ItemDto = new ItemDto(1L, "my item", "item description",
+    private final ItemDto itemDto = new ItemDto(1L, "my item", "item description",
             1L, true, null, null, null, null);
     @MockBean
     private ItemService itemService;
@@ -35,62 +35,62 @@ class ItemControllerTest {
 
     @Test
     void saveNewItem() throws Exception {
-        when(itemService.saveItem(any())).thenReturn(ItemDto);
+        when(itemService.saveItem(any())).thenReturn(itemDto);
 
-        mvc.perform(post("/items").content(mapper.writeValueAsString(ItemDto))
+        mvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8).contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(content().json(mapper.writeValueAsString(ItemDto)))
-                .andExpect(jsonPath("$.id", is(ItemDto.getId()), Long.class))
-                .andExpect(jsonPath("$.name", is(ItemDto.getName()), String.class))
-                .andExpect(jsonPath("$.description", is(ItemDto.getDescription()), String.class))
-                .andExpect(jsonPath("$.available", is(ItemDto.getAvailable()), Boolean.class));
+                .andExpect(status().isOk()).andExpect(content().json(mapper.writeValueAsString(itemDto)))
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName()), String.class))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class));
     }
 
     @Test
     void updateItem() throws Exception {
-        when(itemService.updateItem(any())).thenReturn(ItemDto);
+        when(itemService.updateItem(any())).thenReturn(itemDto);
 
-        mvc.perform(patch("/items/1").content(mapper.writeValueAsString(ItemDto))
+        mvc.perform(patch("/items/1").content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8).contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(content().json(mapper.writeValueAsString(ItemDto)))
-                .andExpect(jsonPath("$.id", is(ItemDto.getId()), Long.class))
-                .andExpect(jsonPath("$.name", is(ItemDto.getName()), String.class))
-                .andExpect(jsonPath("$.description", is(ItemDto.getDescription()), String.class))
-                .andExpect(jsonPath("$.available", is(ItemDto.getAvailable()), Boolean.class));
+                .andExpect(status().isOk()).andExpect(content().json(mapper.writeValueAsString(itemDto)))
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName()), String.class))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription()), String.class))
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable()), Boolean.class));
     }
 
     @Test
     void getItemById() throws Exception {
-        when(itemService.getItem(anyLong(), anyLong())).thenReturn(ItemDto);
+        when(itemService.getItem(anyLong(), anyLong())).thenReturn(itemDto);
 
-        mvc.perform(get("/items/1").content(mapper.writeValueAsString(ItemDto))
+        mvc.perform(get("/items/1").content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8).contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.id", is(ItemDto.getId()), Long.class))
-                .andExpect(jsonPath("$.name", is(ItemDto.getName())))
-                .andExpect(jsonPath("$.description", is(ItemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(ItemDto.getAvailable())));
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
     }
 
     @Test
     void getItemsByOwner() throws Exception {
-        when(itemService.getUsersItems(anyInt(), anyInt(), anyLong())).thenReturn(List.of(ItemDto));
+        when(itemService.getUsersItems(anyInt(), anyInt(), anyLong())).thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items").characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(List.of(ItemDto))));
+                .andExpect(content().json(mapper.writeValueAsString(List.of(itemDto))));
     }
 
     @Test
     void getFilmBySearch() throws Exception {
-        when(itemService.searchItems(any(), any(), any())).thenReturn(List.of(ItemDto));
+        when(itemService.searchItems(any(), any(), any())).thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items/search?text=a&from=0&size=4").characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andExpect(content().json(mapper.writeValueAsString(List.of(ItemDto))));
+                .andExpect(status().isOk()).andExpect(content().json(mapper.writeValueAsString(List.of(itemDto))));
     }
 
     @Test
