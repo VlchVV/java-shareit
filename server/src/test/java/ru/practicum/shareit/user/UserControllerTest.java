@@ -113,6 +113,19 @@ class UserControllerTest {
     }
 
     @Test
+    void updateUser_ConditionsNotMetException() throws Exception {
+        userDto.setEmail(null);
+        userDto.setName(null);
+
+        mvc.perform(patch("/users/1")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
     void deleteUser_NotFound() throws Exception {
         doThrow(new NotFoundException("User not found")).when(userService).deleteUser(anyLong());
 
