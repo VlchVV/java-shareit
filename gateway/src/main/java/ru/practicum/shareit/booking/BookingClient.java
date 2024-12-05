@@ -27,7 +27,9 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getAllByBooker(Integer from, Integer size, BookingState state, long userId) {
+    public ResponseEntity<Object> getAllByBooker(Integer from, Integer size, String stateParam, long userId) {
+        BookingState state = BookingState.from(stateParam)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
@@ -36,7 +38,9 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getAllByOwner(Integer from, Integer size, BookingState state, long userId) {
+    public ResponseEntity<Object> getAllByOwner(Integer from, Integer size, String stateParam, long userId) {
+        BookingState state = BookingState.from(stateParam)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,

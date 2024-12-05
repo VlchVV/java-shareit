@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingState;
 
 @RequiredArgsConstructor
 @Validated
@@ -42,9 +41,7 @@ public class BookingController {
                                                  @RequestParam(defaultValue = "10") @Positive Integer size,
                                                  @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
                                                  @RequestHeader("X-Sharer-User-Id") @Positive long bookerId) {
-        BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-        return bookingClient.getAllByBooker(from, size, state, bookerId);
+        return bookingClient.getAllByBooker(from, size, stateParam, bookerId);
     }
 
     @GetMapping("/owner")
@@ -52,8 +49,6 @@ public class BookingController {
                                                 @RequestParam(defaultValue = "10") @Positive Integer size,
                                                 @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
                                                 @RequestHeader("X-Sharer-User-Id") @Positive long ownerId) {
-        BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
-        return bookingClient.getAllByOwner(from, size, state, ownerId);
+        return bookingClient.getAllByOwner(from, size, stateParam, ownerId);
     }
 }
